@@ -1,0 +1,26 @@
+{
+	"name": "DestinationDataset_lvn",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZ_Dest_Blob2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@{item().Table_Name}",
+					"type": "Expression"
+				},
+				"container": "movies"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

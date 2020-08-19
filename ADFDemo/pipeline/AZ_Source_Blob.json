@@ -1,0 +1,206 @@
+{
+	"name": "AZ_Source_Blob",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_lvn",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "sales//dbo.Product.txt"
+					},
+					{
+						"name": "Destination",
+						"value": "movies//sales"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings",
+							"skipLineCount": 0
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ProductID",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"name": "Name",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"name": "ProductNumber",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 3
+								}
+							},
+							{
+								"source": {
+									"name": "Color",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 4
+								}
+							},
+							{
+								"source": {
+									"name": "StandardCost",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 5
+								}
+							},
+							{
+								"source": {
+									"name": "ListPrice",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 6
+								}
+							},
+							{
+								"source": {
+									"name": "Size",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 7
+								}
+							},
+							{
+								"source": {
+									"name": "Weight",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 8
+								}
+							},
+							{
+								"source": {
+									"name": "ProductCategoryID",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 9
+								}
+							},
+							{
+								"source": {
+									"name": "ProductModelID",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 10
+								}
+							},
+							{
+								"source": {
+									"name": "SellStartDate",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 11
+								}
+							},
+							{
+								"source": {
+									"name": "SellEndDate",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 12
+								}
+							},
+							{
+								"source": {
+									"name": "ModifiedDate",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 13
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDataset_lvn",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataset_lvn",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2020-08-18T02:46:59Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
