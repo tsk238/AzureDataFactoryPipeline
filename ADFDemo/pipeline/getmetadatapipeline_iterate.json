@@ -73,7 +73,52 @@
 					"items": {
 						"value": "@activity('Filter_dbo').output.Value",
 						"type": "Expression"
-					}
+					},
+					"activities": [
+						{
+							"name": "SP_Save",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[STORE_FILEMETADATA]",
+								"storedProcedureParameters": {
+									"FileName": {
+										"value": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"LastModifiedDate": {
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"RecInsertDate": {
+										"value": {
+											"value": "@convertFromUtc(utcnow(),'Eastern Standard Time')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Az_SQL_DB_LS",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
 				}
 			}
 		],
