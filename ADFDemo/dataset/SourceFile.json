@@ -5,12 +5,21 @@
 			"referenceName": "AZ_Source_Blob",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"inputfile": {
+				"type": "string",
+				"defaultValue": "SalesCategory.csv"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "SalesCategory.csv",
+				"fileName": {
+					"value": "@dataset().inputfile",
+					"type": "Expression"
+				},
 				"container": "sales"
 			},
 			"columnDelimiter": ",",
