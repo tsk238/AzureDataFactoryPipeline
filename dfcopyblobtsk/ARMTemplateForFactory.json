@@ -1098,7 +1098,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "dataflow1",
+						"name": "AverageComedyRating",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
