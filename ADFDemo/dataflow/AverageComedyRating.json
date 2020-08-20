@@ -1,0 +1,35 @@
+{
+	"name": "AverageComedyRating",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "newsalesds",
+						"type": "DatasetReference"
+					},
+					"name": "sourceblob"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "newsalesds",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MoviesDBFilter"
+				},
+				{
+					"name": "AverageComedyRating"
+				}
+			],
+			"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> sourceblob\nsourceblob filter(toInteger(year) >=1910 && toInteger(year) <=2000 && rlike( genres, 'Comedy')) ~> MoviesDBFilter\nMoviesDBFilter aggregate(Rating = avg(toInteger(Rating))) ~> AverageComedyRating\nAverageComedyRating sink(input(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['AvgMovieRating'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}
