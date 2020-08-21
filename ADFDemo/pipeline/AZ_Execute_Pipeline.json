@@ -1,0 +1,24 @@
+{
+	"name": "AZ_Execute_Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Input to Dynamic copy data",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "AZ_Load_Dynamic_Files",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "Sales"
+		},
+		"annotations": []
+	}
+}
