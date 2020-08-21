@@ -18,6 +18,14 @@
 		"Az_SQL_DB_LS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Az_SQL_DB_LS'"
+		},
+		"AZ_Destination_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_Destination_LS'"
+		},
+		"AZ_Source_Blob_Dynamic_Params_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_Source_Blob_Dynamic_Params_LS'"
 		}
 	},
 	"variables": {
@@ -59,6 +67,32 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('Az_SQL_DB_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_Destination_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_Destination_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_Source_Blob_Dynamic_Params_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_Source_Blob_Dynamic_Params_LS_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -321,6 +355,89 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AZ_Source_Blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_Source_Blob_Dynamic_Params_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Source_Blob_Dynamic_Params_LS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"containername": {
+						"type": "string"
+					},
+					"filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Sales"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().containername",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Source_Blob_Dynamic_Params_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_Destination_Dynamic_Params_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Destination_LS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"tableschema": {
+						"type": "string"
+					},
+					"tablename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Sales"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().tableschema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().tablename",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_Destination_LS')]"
 			]
 		},
 		{
@@ -1388,89 +1505,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SourceFiles')]",
 				"[concat(variables('factoryId'), '/linkedServices/Az_SQL_DB_LS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AverageComedyRating')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "newsalesds",
-								"type": "DatasetReference"
-							},
-							"name": "sourceblob"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "SourceFiles",
-								"type": "DatasetReference"
-							},
-							"name": "destinationblobstorage"
-						}
-					],
-					"transformations": [
-						{
-							"name": "MoviesDBFilter"
-						},
-						{
-							"name": "AverageComedyRating"
-						}
-					],
-					"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> sourceblob\nsourceblob filter(toInteger(year) >=1910 && toInteger(year) <=2000 && rlike( genres, 'Comedy')) ~> MoviesDBFilter\nMoviesDBFilter aggregate(Rating = avg(toInteger(Rating))) ~> AverageComedyRating\nAverageComedyRating sink(input(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['AvgMovieRating.txt'],\n\tpartitionBy('hash', 1),\n\tdateFormat:'yyyy-MM-dd',\n\ttimestampFormat:'MM-dd-yyyy HH:mm:ss',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> destinationblobstorage"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/newsalesds')]",
-				"[concat(variables('factoryId'), '/datasets/SourceFiles')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/processmoviesdata')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "AverageComedyRating",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "AverageComedyRating",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"sourceblob": {},
-									"destinationblobstorage": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/AverageComedyRating')]"
 			]
 		}
 	]
