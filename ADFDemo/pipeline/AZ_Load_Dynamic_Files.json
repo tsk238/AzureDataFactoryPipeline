@@ -1,0 +1,9 @@
+{
+	"name": "AZ_Load_Dynamic_Files",
+	"properties": {
+		"folder": {
+			"name": "Sales"
+		},
+		"annotations": []
+	}
+}
