@@ -12,7 +12,13 @@
 						"referenceName": "AZ_Load_Dynamic_Files",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": false,
+					"parameters": {
+						"containername": "",
+						"filename": "SalesCategory.csv",
+						"tableschema": "",
+						"tablename": "SalesCategory"
+					}
 				}
 			}
 		],
