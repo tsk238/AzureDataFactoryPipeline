@@ -76,16 +76,20 @@
 		],
 		"parameters": {
 			"containername": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "movies"
 			},
 			"filename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Sales.csv"
 			},
 			"tableschema": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "dbo"
 			},
 			"tablename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Product"
 			}
 		},
 		"folder": {
