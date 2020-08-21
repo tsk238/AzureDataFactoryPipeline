@@ -11,21 +11,21 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Dest_Blob2'"
 		},
-		"AZ_Source_Blob_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AZ_Source_Blob'"
-		},
-		"Az_SQL_DB_LS_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'Az_SQL_DB_LS'"
-		},
 		"AZ_Destination_LS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Destination_LS'"
 		},
+		"AZ_Source_Blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_Source_Blob'"
+		},
 		"AZ_Source_Blob_Dynamic_Params_LS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Source_Blob_Dynamic_Params_LS'"
+		},
+		"Az_SQL_DB_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Az_SQL_DB_LS'"
 		},
 		"containerUri": {
 			"type": "string",
@@ -57,17 +57,17 @@
 					"AZ_Dest_Blob2_connectionString": {
 						"value": "[parameters('AZ_Dest_Blob2_connectionString')]"
 					},
-					"AZ_Source_Blob_connectionString": {
-						"value": "[parameters('AZ_Source_Blob_connectionString')]"
-					},
-					"Az_SQL_DB_LS_connectionString": {
-						"value": "[parameters('Az_SQL_DB_LS_connectionString')]"
-					},
 					"AZ_Destination_LS_connectionString": {
 						"value": "[parameters('AZ_Destination_LS_connectionString')]"
 					},
+					"AZ_Source_Blob_connectionString": {
+						"value": "[parameters('AZ_Source_Blob_connectionString')]"
+					},
 					"AZ_Source_Blob_Dynamic_Params_LS_connectionString": {
 						"value": "[parameters('AZ_Source_Blob_Dynamic_Params_LS_connectionString')]"
+					},
+					"Az_SQL_DB_LS_connectionString": {
+						"value": "[parameters('Az_SQL_DB_LS_connectionString')]"
 					}
 				}
 			},

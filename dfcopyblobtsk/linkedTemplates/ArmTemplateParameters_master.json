@@ -8,16 +8,16 @@
 		"AZ_Dest_Blob2_connectionString": {
 			"value": ""
 		},
-		"AZ_Source_Blob_connectionString": {
-			"value": ""
-		},
-		"Az_SQL_DB_LS_connectionString": {
-			"value": ""
-		},
 		"AZ_Destination_LS_connectionString": {
 			"value": ""
 		},
+		"AZ_Source_Blob_connectionString": {
+			"value": ""
+		},
 		"AZ_Source_Blob_Dynamic_Params_LS_connectionString": {
+			"value": ""
+		},
+		"Az_SQL_DB_LS_connectionString": {
 			"value": ""
 		},
 		"containerUri": {
