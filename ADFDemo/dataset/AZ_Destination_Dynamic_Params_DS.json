@@ -1,0 +1,23 @@
+{
+	"name": "AZ_Destination_Dynamic_Params_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZ_Destination_LS",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableschema": {
+				"type": "string"
+			},
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Sales"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
