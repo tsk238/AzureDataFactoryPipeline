@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "dataflow1",
+				"name": "JoinSalesDataFiles",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
