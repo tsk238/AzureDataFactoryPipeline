@@ -1,0 +1,22 @@
+{
+	"name": "DestinationJoinSalesDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DestSalesAndSalesCateogyLS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "movies"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
