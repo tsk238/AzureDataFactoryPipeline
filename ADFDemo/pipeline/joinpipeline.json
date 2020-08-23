@@ -1,9 +1,0 @@
-{
-	"name": "joinpipeline",
-	"properties": {
-		"folder": {
-			"name": "Join"
-		},
-		"annotations": []
-	}
-}
