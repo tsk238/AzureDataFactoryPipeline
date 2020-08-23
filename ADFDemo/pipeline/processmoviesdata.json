@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "AverageComedyRating",
+				"name": "AverageComedyRating_1",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
