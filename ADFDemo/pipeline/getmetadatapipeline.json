@@ -17,7 +17,10 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "SourceFile",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"inputfile": "SalesCategory.csv"
+						}
 					},
 					"fieldList": [
 						"itemName",
