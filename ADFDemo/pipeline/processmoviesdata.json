@@ -26,6 +26,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "DataFlow-Aggregation"
+		},
 		"annotations": []
 	}
 }
