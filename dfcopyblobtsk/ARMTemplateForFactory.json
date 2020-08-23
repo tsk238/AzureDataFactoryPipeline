@@ -1033,7 +1033,9 @@
 							"dataset": {
 								"referenceName": "SourceFile",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"inputfile": "SalesCategory.csv"
+								}
 							},
 							"fieldList": [
 								"itemName",
