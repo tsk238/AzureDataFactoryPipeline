@@ -1,0 +1,36 @@
+{
+	"name": "AZ_SRC_SalesCategory_File_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZ_SRC_Sales_LS",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Join"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "SalesCategory.csv",
+				"container": "sales"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
