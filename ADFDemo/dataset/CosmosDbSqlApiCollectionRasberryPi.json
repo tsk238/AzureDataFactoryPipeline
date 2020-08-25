@@ -1,0 +1,14 @@
+{
+	"name": "CosmosDbSqlApiCollectionRasberryPi",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZ_CosmosDB_RasberryPi_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"typeProperties": {
+			"collectionName": "DeviceData"
+		}
+	}
+}
