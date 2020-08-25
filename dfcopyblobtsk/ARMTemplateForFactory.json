@@ -2019,7 +2019,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Copy data1",
+						"name": "IOTJsonDataToCosmosDB",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
