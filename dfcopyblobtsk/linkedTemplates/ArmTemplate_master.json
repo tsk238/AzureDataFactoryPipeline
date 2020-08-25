@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Destination_LS'"
 		},
+		"AZ_SRC_Sales_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_SRC_Sales_LS'"
+		},
 		"AZ_Source_Blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Source_Blob'"
@@ -26,6 +30,18 @@
 		"Az_SQL_DB_LS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Az_SQL_DB_LS'"
+		},
+		"DestSalesAndSalesCateogyLS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'DestSalesAndSalesCateogyLS'"
+		},
+		"SourceRasbeeryPiJsonData_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SourceRasbeeryPiJsonData'"
+		},
+		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_CosmosDB_RasberryPi_LS'"
 		},
 		"containerUri": {
 			"type": "string",
@@ -60,6 +76,9 @@
 					"AZ_Destination_LS_connectionString": {
 						"value": "[parameters('AZ_Destination_LS_connectionString')]"
 					},
+					"AZ_SRC_Sales_LS_connectionString": {
+						"value": "[parameters('AZ_SRC_Sales_LS_connectionString')]"
+					},
 					"AZ_Source_Blob_connectionString": {
 						"value": "[parameters('AZ_Source_Blob_connectionString')]"
 					},
@@ -68,6 +87,15 @@
 					},
 					"Az_SQL_DB_LS_connectionString": {
 						"value": "[parameters('Az_SQL_DB_LS_connectionString')]"
+					},
+					"DestSalesAndSalesCateogyLS_connectionString": {
+						"value": "[parameters('DestSalesAndSalesCateogyLS_connectionString')]"
+					},
+					"SourceRasbeeryPiJsonData_connectionString": {
+						"value": "[parameters('SourceRasbeeryPiJsonData_connectionString')]"
+					},
+					"AZ_CosmosDB_RasberryPi_LS_connectionString": {
+						"value": "[parameters('AZ_CosmosDB_RasberryPi_LS_connectionString')]"
 					}
 				}
 			},

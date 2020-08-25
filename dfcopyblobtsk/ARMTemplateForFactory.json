@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Destination_LS'"
 		},
+		"AZ_SRC_Sales_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_SRC_Sales_LS'"
+		},
 		"AZ_Source_Blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Source_Blob'"
@@ -26,6 +30,18 @@
 		"Az_SQL_DB_LS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Az_SQL_DB_LS'"
+		},
+		"DestSalesAndSalesCateogyLS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'DestSalesAndSalesCateogyLS'"
+		},
+		"SourceRasbeeryPiJsonData_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SourceRasbeeryPiJsonData'"
+		},
+		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_CosmosDB_RasberryPi_LS'"
 		}
 	},
 	"variables": {
@@ -1012,6 +1028,52 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/JoinPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "JoinSalesDataFiles",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "JoinSalesDataFiles",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SourceSalesDataFile": {},
+									"SourceSalesCategoryDataFile": {},
+									"DestJoinSalesAndSalesCategory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"folder": {
+					"name": "DataFlow-Join"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/JoinSalesDataFiles')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/getmetadatapipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1252,7 +1314,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "AverageComedyRating",
+						"name": "AverageComedyRating_1",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -1347,6 +1409,118 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AZ_SRC_SalesCategory_File_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_SRC_Sales_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Join"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "SalesCategory.csv",
+						"container": "sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_SRC_Sales_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_SRC_Sales_File_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_SRC_Sales_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Join"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "dbo.Product.txt",
+						"container": "sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_SRC_Sales_LS')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AZ_Source_Blob_Dynamic_Params_DS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1419,6 +1593,33 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AZ_Dest_Blob2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationJoinSalesDS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "DestSalesAndSalesCateogyLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "movies"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/DestSalesAndSalesCateogyLS')]"
 			]
 		},
 		{
@@ -1660,6 +1861,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AZ_SRC_Sales_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_SRC_Sales_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AZ_Source_Blob')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1694,6 +1908,19 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('Az_SQL_DB_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestSalesAndSalesCateogyLS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('DestSalesAndSalesCateogyLS_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -1737,6 +1964,225 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/newsalesds')]",
 				"[concat(variables('factoryId'), '/datasets/SourceFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/JoinSalesDataFiles')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AZ_SRC_Sales_File_DS",
+								"type": "DatasetReference"
+							},
+							"name": "SourceSalesDataFile"
+						},
+						{
+							"dataset": {
+								"referenceName": "AZ_SRC_SalesCategory_File_DS",
+								"type": "DatasetReference"
+							},
+							"name": "SourceSalesCategoryDataFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DestinationJoinSalesDS",
+								"type": "DatasetReference"
+							},
+							"name": "DestJoinSalesAndSalesCategory"
+						}
+					],
+					"transformations": [
+						{
+							"name": "JoinSalesFiles"
+						}
+					],
+					"script": "source(output(\n\t\tProductID as short,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as double,\n\t\tListPrice as double,\n\t\tSize as string,\n\t\tWeight as string,\n\t\tProductCategoryID as short,\n\t\tProductModelID as short,\n\t\tSellStartDate as string,\n\t\tSellEndDate as string,\n\t\tModifiedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceSalesDataFile\nsource(output(\n\t\tProductCategoryID as short,\n\t\tParentProductCategoryID as short,\n\t\tName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceSalesCategoryDataFile\nSourceSalesDataFile, SourceSalesCategoryDataFile join(SourceSalesDataFile@ProductCategoryID == SourceSalesCategoryDataFile@ProductCategoryID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinSalesFiles\nJoinSalesFiles sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['SalesAndSalesCategory.csv'],\n\tmapColumn(\n\t\tProductID,\n\t\tName = SourceSalesDataFile@Name,\n\t\tProductNumber,\n\t\tColor,\n\t\tStandardCost,\n\t\tListPrice,\n\t\tSize,\n\t\tWeight,\n\t\tProductCategoryID = SourceSalesDataFile@ProductCategoryID,\n\t\tProductModelID,\n\t\tSellStartDate,\n\t\tSellEndDate,\n\t\tModifiedDate,\n\t\tParentProductCategoryID,\n\t\tName = SourceSalesCategoryDataFile@Name\n\t),\n\tpartitionBy('hash', 1),\n\tdateFormat:'yyyy.MM.dd',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DestJoinSalesAndSalesCategory"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AZ_SRC_Sales_File_DS')]",
+				"[concat(variables('factoryId'), '/datasets/AZ_SRC_SalesCategory_File_DS')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationJoinSalesDS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_LoadRasberryPiData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "insert"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "RasberryPiJsonData",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CosmosDbSqlApiCollectionRasberryPi",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RasberryPiJsonData')]",
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCollectionRasberryPi')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceRasbeeryPiJsonData')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('SourceRasbeeryPiJsonData_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RasberryPiJsonData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SourceRasbeeryPiJsonData",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "RasberryPiData.json",
+						"container": "temperature"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"messageId": {
+							"type": "integer"
+						},
+						"deviceId": {
+							"type": "string"
+						},
+						"temperature": {
+							"type": "number"
+						},
+						"humidity": {
+							"type": "number"
+						},
+						"EventProcessedUtcTime": {
+							"type": "string"
+						},
+						"PartitionId": {
+							"type": "integer"
+						},
+						"EventEnqueuedUtcTime": {
+							"type": "string"
+						},
+						"IoTHub": {
+							"type": "object",
+							"properties": {
+								"MessageId": {
+									"type": "null"
+								},
+								"CorrelationId": {
+									"type": "null"
+								},
+								"ConnectionDeviceId": {
+									"type": "string"
+								},
+								"ConnectionDeviceGenerationId": {
+									"type": "string"
+								},
+								"EnqueuedTime": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SourceRasbeeryPiJsonData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_CosmosDB_RasberryPi_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_CosmosDB_RasberryPi_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiCollectionRasberryPi')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_CosmosDB_RasberryPi_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {},
+				"typeProperties": {
+					"collectionName": "DeviceData"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_CosmosDB_RasberryPi_LS')]"
 			]
 		}
 	]

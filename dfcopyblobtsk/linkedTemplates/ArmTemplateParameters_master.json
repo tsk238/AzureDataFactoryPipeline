@@ -11,6 +11,9 @@
 		"AZ_Destination_LS_connectionString": {
 			"value": ""
 		},
+		"AZ_SRC_Sales_LS_connectionString": {
+			"value": ""
+		},
 		"AZ_Source_Blob_connectionString": {
 			"value": ""
 		},
@@ -18,6 +21,15 @@
 			"value": ""
 		},
 		"Az_SQL_DB_LS_connectionString": {
+			"value": ""
+		},
+		"DestSalesAndSalesCateogyLS_connectionString": {
+			"value": ""
+		},
+		"SourceRasbeeryPiJsonData_connectionString": {
+			"value": ""
+		},
+		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
 			"value": ""
 		},
 		"containerUri": {
