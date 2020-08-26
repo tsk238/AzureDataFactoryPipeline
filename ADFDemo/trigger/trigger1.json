@@ -1,0 +1,24 @@
+{
+	"name": "trigger1",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "AZ_LoadRasberryPiData",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/temperature/blobs/0_",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/59fb1009-8a12-4f1c-8b5c-6dd026d33ccf/resourceGroups/iothub/providers/Microsoft.Storage/storageAccounts/iothubstorageaccounttsk",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
