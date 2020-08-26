@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dfcopyblobtsk"
 		},
+		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_CosmosDB_RasberryPi_LS'"
+		},
 		"AZ_Dest_Blob2_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Dest_Blob2'"
@@ -39,9 +43,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SourceRasbeeryPiJsonData'"
 		},
-		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AZ_CosmosDB_RasberryPi_LS'"
+		"trigger1_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/59fb1009-8a12-4f1c-8b5c-6dd026d33ccf/resourceGroups/iothub/providers/Microsoft.Storage/storageAccounts/iothubstorageaccounttsk"
 		}
 	},
 	"variables": {
@@ -81,6 +85,67 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/AZ_Load_Dynamic_Files')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_LoadRasberryPiData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "IOTJsonDataToCosmosDB",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "insert"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "RasberryPiJsonData",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CosmosDbSqlApiCollectionRasberryPi",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"folder": {
+					"name": "IOT-Analytics"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RasberryPiJsonData')]",
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCollectionRasberryPi')]"
 			]
 		},
 		{
@@ -1566,6 +1631,26 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiCollectionRasberryPi')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_CosmosDB_RasberryPi_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {},
+				"typeProperties": {
+					"collectionName": "DeviceData"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_CosmosDB_RasberryPi_LS')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DestinationDataset_lvn')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1620,6 +1705,75 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/DestSalesAndSalesCateogyLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RasberryPiJsonData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SourceRasbeeryPiJsonData",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "RasberryPiData.json",
+						"container": "temperature"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"messageId": {
+							"type": "integer"
+						},
+						"deviceId": {
+							"type": "string"
+						},
+						"temperature": {
+							"type": "number"
+						},
+						"humidity": {
+							"type": "number"
+						},
+						"EventProcessedUtcTime": {
+							"type": "string"
+						},
+						"PartitionId": {
+							"type": "integer"
+						},
+						"EventEnqueuedUtcTime": {
+							"type": "string"
+						},
+						"IoTHub": {
+							"type": "object",
+							"properties": {
+								"MessageId": {
+									"type": "null"
+								},
+								"CorrelationId": {
+									"type": "null"
+								},
+								"ConnectionDeviceId": {
+									"type": "string"
+								},
+								"ConnectionDeviceGenerationId": {
+									"type": "string"
+								},
+								"EnqueuedTime": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SourceRasbeeryPiJsonData')]"
 			]
 		},
 		{
@@ -1835,6 +1989,19 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AZ_CosmosDB_RasberryPi_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_CosmosDB_RasberryPi_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AZ_Dest_Blob2')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1926,6 +2093,49 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SourceRasbeeryPiJsonData')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('SourceRasbeeryPiJsonData_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "AZ_LoadRasberryPiData",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/temperature/blobs/0_",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('trigger1_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/AZ_LoadRasberryPiData')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AverageComedyRating')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -2010,179 +2220,6 @@
 				"[concat(variables('factoryId'), '/datasets/AZ_SRC_Sales_File_DS')]",
 				"[concat(variables('factoryId'), '/datasets/AZ_SRC_SalesCategory_File_DS')]",
 				"[concat(variables('factoryId'), '/datasets/DestinationJoinSalesDS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AZ_LoadRasberryPiData')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "IOTJsonDataToCosmosDB",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "JsonSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true
-								},
-								"formatSettings": {
-									"type": "JsonReadSettings"
-								}
-							},
-							"sink": {
-								"type": "CosmosDbSqlApiSink",
-								"writeBehavior": "insert"
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "RasberryPiJsonData",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CosmosDbSqlApiCollectionRasberryPi",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/RasberryPiJsonData')]",
-				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCollectionRasberryPi')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SourceRasbeeryPiJsonData')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('SourceRasbeeryPiJsonData_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RasberryPiJsonData')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SourceRasbeeryPiJsonData",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "RasberryPiData.json",
-						"container": "temperature"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"messageId": {
-							"type": "integer"
-						},
-						"deviceId": {
-							"type": "string"
-						},
-						"temperature": {
-							"type": "number"
-						},
-						"humidity": {
-							"type": "number"
-						},
-						"EventProcessedUtcTime": {
-							"type": "string"
-						},
-						"PartitionId": {
-							"type": "integer"
-						},
-						"EventEnqueuedUtcTime": {
-							"type": "string"
-						},
-						"IoTHub": {
-							"type": "object",
-							"properties": {
-								"MessageId": {
-									"type": "null"
-								},
-								"CorrelationId": {
-									"type": "null"
-								},
-								"ConnectionDeviceId": {
-									"type": "string"
-								},
-								"ConnectionDeviceGenerationId": {
-									"type": "string"
-								},
-								"EnqueuedTime": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SourceRasbeeryPiJsonData')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AZ_CosmosDB_RasberryPi_LS')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "CosmosDb",
-				"typeProperties": {
-					"connectionString": "[parameters('AZ_CosmosDB_RasberryPi_LS_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiCollectionRasberryPi')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AZ_CosmosDB_RasberryPi_LS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "CosmosDbSqlApiCollection",
-				"schema": {},
-				"typeProperties": {
-					"collectionName": "DeviceData"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AZ_CosmosDB_RasberryPi_LS')]"
 			]
 		}
 	]

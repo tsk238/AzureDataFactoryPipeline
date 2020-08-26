@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "dfcopyblobtsk"
 		},
+		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
+			"value": ""
+		},
 		"AZ_Dest_Blob2_connectionString": {
 			"value": ""
 		},
@@ -29,8 +32,8 @@
 		"SourceRasbeeryPiJsonData_connectionString": {
 			"value": ""
 		},
-		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
-			"value": ""
+		"trigger1_properties_typeProperties_scope": {
+			"value": "/subscriptions/59fb1009-8a12-4f1c-8b5c-6dd026d33ccf/resourceGroups/iothub/providers/Microsoft.Storage/storageAccounts/iothubstorageaccounttsk"
 		}
 	}
 }

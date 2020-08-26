@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dfcopyblobtsk"
 		},
+		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_CosmosDB_RasberryPi_LS'"
+		},
 		"AZ_Dest_Blob2_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_Dest_Blob2'"
@@ -39,9 +43,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SourceRasbeeryPiJsonData'"
 		},
-		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AZ_CosmosDB_RasberryPi_LS'"
+		"trigger1_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/59fb1009-8a12-4f1c-8b5c-6dd026d33ccf/resourceGroups/iothub/providers/Microsoft.Storage/storageAccounts/iothubstorageaccounttsk"
 		},
 		"containerUri": {
 			"type": "string",
@@ -70,6 +74,9 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AZ_CosmosDB_RasberryPi_LS_connectionString": {
+						"value": "[parameters('AZ_CosmosDB_RasberryPi_LS_connectionString')]"
+					},
 					"AZ_Dest_Blob2_connectionString": {
 						"value": "[parameters('AZ_Dest_Blob2_connectionString')]"
 					},
@@ -93,9 +100,6 @@
 					},
 					"SourceRasbeeryPiJsonData_connectionString": {
 						"value": "[parameters('SourceRasbeeryPiJsonData_connectionString')]"
-					},
-					"AZ_CosmosDB_RasberryPi_LS_connectionString": {
-						"value": "[parameters('AZ_CosmosDB_RasberryPi_LS_connectionString')]"
 					}
 				}
 			},
@@ -114,6 +118,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"trigger1_properties_typeProperties_scope": {
+						"value": "[parameters('trigger1_properties_typeProperties_scope')]"
 					}
 				}
 			},
