@@ -45,6 +45,9 @@
 				]
 			}
 		],
+		"folder": {
+			"name": "IOT-Analytics"
+		},
 		"annotations": []
 	}
 }
