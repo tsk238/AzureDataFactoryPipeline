@@ -1,0 +1,35 @@
+{
+	"name": "AZ_HDInsight_LS",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "HDInsightOnDemand",
+		"typeProperties": {
+			"clusterType": "hadoop",
+			"clusterSize": 2,
+			"timeToLive": "00:15:00",
+			"version": "3.6",
+			"hostSubscriptionId": "59fb1009-8a12-4f1c-8b5c-6dd026d33ccf",
+			"clusterResourceGroup": "DF_COPY_BLOB_RG",
+			"servicePrincipalId": "0cf3ac68-a439-476f-bc17-81b806a7cda7",
+			"tenant": "c934857e-30bb-4044-9f1a-ff36d2cc99c5",
+			"clusterNamePrefix": "",
+			"additionalLinkedServiceNames": [
+				{
+					"referenceName": "AZ_HDInsightBlob_LS",
+					"type": "LinkedServiceReference"
+				}
+			],
+			"linkedServiceName": {
+				"referenceName": "AZ_HDInsightBlob_LS",
+				"type": "LinkedServiceReference"
+			},
+			"headNodeSize": "",
+			"dataNodeSize": "",
+			"zookeeperNodeSize": "",
+			"subnetName": "",
+			"virtualNetworkId": "",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRGQ09QWUJMT0JUU0tfNzNhOWI4OWItNzQ4Zi00YTYxLTk1NGQtNmZjNjFlNDViZTBkIg0KfQ=="
+		}
+	}
+}
