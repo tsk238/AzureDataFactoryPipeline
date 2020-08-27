@@ -42,6 +42,10 @@
 		"SourceRasbeeryPiJsonData_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SourceRasbeeryPiJsonData'"
+		},
+		"AZ_HDInsightBlob_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_HDInsightBlob_LS'"
 		}
 	},
 	"variables": {
@@ -161,6 +165,19 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('SourceRasbeeryPiJsonData_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsightBlob_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_HDInsightBlob_LS_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -606,42 +623,6 @@
 						"type": "String"
 					}
 				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AZ_Source_Blob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SourceFile')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AZ_Source_Blob",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"inputfile": {
-						"type": "string",
-						"defaultValue": "SalesCategory.csv"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().inputfile",
-							"type": "Expression"
-						},
-						"container": "sales"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AZ_Source_Blob')]"
