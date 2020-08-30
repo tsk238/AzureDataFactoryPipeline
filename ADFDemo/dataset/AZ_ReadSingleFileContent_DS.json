@@ -5,6 +5,11 @@
 			"referenceName": "AZ_HDInsight_Auto_readInputFileContent_LS",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"dynamicfilename": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "HDInsight_Hive_Integration"
 		},
@@ -13,6 +18,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().dynamicfilename",
+					"type": "Expression"
+				},
 				"folderPath": "inputfilepath",
 				"container": "hivedatastore"
 			},
