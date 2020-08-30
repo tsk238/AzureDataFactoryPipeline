@@ -106,19 +106,132 @@
 											"type": "Expression"
 										}
 									}
+								},
+								"firstRowOnly": false
+							}
+						},
+						{
+							"name": "Set Input File Location",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Read File Content",
+									"dependencyConditions": [
+										"Succeeded"
+									]
 								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "inputfilelocation",
+								"value": {
+									"value": "@activity('Read File Content').output.value[0].inputfilelocation",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set Output File Location",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Read File Content",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "outputfilelocation",
+								"value": {
+									"value": "@activity('Read File Content').output.value[0].outputFilelocation",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Process Web Analytics",
+							"type": "HDInsightHive",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"scriptPath": "hivedatastore/scripts/partitionweblogs.hql",
+								"defines": {
+									"inputfilelocation": {
+										"value": "@variables('inputfilelocation')",
+										"type": "Expression"
+									},
+									"outputfilelication": {
+										"value": "@variables('outputfilelocation')",
+										"type": "Expression"
+									}
+								},
+								"scriptLinkedService": {
+									"referenceName": "AZ_HDInsight_Auto_Storage_LS",
+									"type": "LinkedServiceReference"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AZ_HDInsight_Auto_LS",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Invoking spark",
+							"type": "HDInsightSpark",
+							"dependsOn": [
+								{
+									"activity": "Set Input File Location",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Set Output File Location",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"rootPath": "hivedatastore/scripts",
+								"entryFilePath": "webloganalysis.ipynb",
+								"sparkJobLinkedService": {
+									"referenceName": "AZ_HDInsight_Auto_Storage_LS",
+									"type": "LinkedServiceReference"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AZ_HDInsight_Auto_LS",
+								"type": "LinkedServiceReference"
 							}
 						}
 					]
 				}
 			}
 		],
-		"parameters": {
+		"variables": {
 			"inputfilelocation": {
-				"type": "string"
+				"type": "String"
 			},
 			"outputfilelocation": {
-				"type": "string"
+				"type": "String"
 			}
 		},
 		"folder": {
