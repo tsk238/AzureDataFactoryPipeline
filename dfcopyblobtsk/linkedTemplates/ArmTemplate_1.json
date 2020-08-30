@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dfcopyblobtsk"
 		},
+		"AZ_HDInsight_Auto_LS_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AZ_HDInsight_Auto_LS'"
+		},
 		"AZ_HDInsight_LS_clusterPassword": {
 			"type": "secureString",
 			"metadata": "Secure string for 'clusterPassword' of 'AZ_HDInsight_LS'"
@@ -18,6 +22,22 @@
 		"AZ_HDInsight_LS_servicePrincipalKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'servicePrincipalKey' of 'AZ_HDInsight_LS'"
+		},
+		"AZ_HDInsight_New_LS_clusterPassword": {
+			"type": "secureString",
+			"metadata": "Secure string for 'clusterPassword' of 'AZ_HDInsight_New_LS'"
+		},
+		"AZ_HDInsight_New_LS_clusterSshPassword": {
+			"type": "secureString",
+			"metadata": "Secure string for 'clusterSshPassword' of 'AZ_HDInsight_New_LS'"
+		},
+		"AZ_HDInsight_New_LS_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'AZ_HDInsight_New_LS'"
+		},
+		"AZ_HDInsight_Auto_LS_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "shravan238"
 		},
 		"AZ_HDInsight_LS_properties_typeProperties_hostSubscriptionId": {
 			"type": "string",
@@ -34,12 +54,217 @@
 		"AZ_HDInsight_LS_properties_typeProperties_tenant": {
 			"type": "string",
 			"defaultValue": "c934857e-30bb-4044-9f1a-ff36d2cc99c5"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_hostSubscriptionId": {
+			"type": "string",
+			"defaultValue": "59fb1009-8a12-4f1c-8b5c-6dd026d33ccf"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_clusterResourceGroup": {
+			"type": "string",
+			"defaultValue": "DF_COPY_BLOB_RG"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "0cf3ac68-a439-476f-bc17-81b806a7cda7"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "c934857e-30bb-4044-9f1a-ff36d2cc99c5"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_clusterUserName": {
+			"type": "string",
+			"defaultValue": "shravan238c"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_clusterSshUserName": {
+			"type": "string",
+			"defaultValue": "shravan238"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_Source_Blob_Dynamic_Params_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Source_Blob_Dynamic_Params_LS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"containername": {
+						"type": "string"
+					},
+					"filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Sales"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().containername",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiCollectionRasberryPi')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_CosmosDB_RasberryPi_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {},
+				"typeProperties": {
+					"collectionName": "DeviceData"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_lvn')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_Dest_Blob2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{item().Table_Name}",
+							"type": "Expression"
+						},
+						"container": "movies"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationJoinSalesDS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "DestSalesAndSalesCateogyLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "movies"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RasberryPiJsonData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SourceRasbeeryPiJsonData",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "RasberryPiData.json",
+						"container": "temperature"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"messageId": {
+							"type": "integer"
+						},
+						"deviceId": {
+							"type": "string"
+						},
+						"temperature": {
+							"type": "number"
+						},
+						"humidity": {
+							"type": "number"
+						},
+						"EventProcessedUtcTime": {
+							"type": "string"
+						},
+						"PartitionId": {
+							"type": "integer"
+						},
+						"EventEnqueuedUtcTime": {
+							"type": "string"
+						},
+						"IoTHub": {
+							"type": "object",
+							"properties": {
+								"MessageId": {
+									"type": "null"
+								},
+								"CorrelationId": {
+									"type": "null"
+								},
+								"ConnectionDeviceId": {
+									"type": "string"
+								},
+								"ConnectionDeviceGenerationId": {
+									"type": "string"
+								},
+								"EnqueuedTime": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SourceDataset_lvn')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -245,6 +470,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_Auto_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HDInsight",
+				"typeProperties": {
+					"clusterUri": "https://shravanclusterhdins.azurehdinsight.net",
+					"userName": "[parameters('AZ_HDInsight_Auto_LS_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AZ_HDInsight_Auto_LS_password')]"
+					},
+					"isEspEnabled": false,
+					"linkedServiceName": {
+						"referenceName": "AZ_HDInsight_Auto_Storage_LS",
+						"type": "LinkedServiceReference"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_LS')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -253,7 +501,7 @@
 				"type": "HDInsightOnDemand",
 				"typeProperties": {
 					"clusterType": "hadoop",
-					"clusterSize": 2,
+					"clusterSize": 4,
 					"timeToLive": "00:15:00",
 					"version": "3.6",
 					"hostSubscriptionId": "[parameters('AZ_HDInsight_LS_properties_typeProperties_hostSubscriptionId')]",
@@ -291,6 +539,306 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_New_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HDInsightOnDemand",
+				"typeProperties": {
+					"clusterType": "hadoop",
+					"clusterSize": 1,
+					"timeToLive": "00:15:00",
+					"version": "3.6",
+					"hostSubscriptionId": "[parameters('AZ_HDInsight_New_LS_properties_typeProperties_hostSubscriptionId')]",
+					"clusterResourceGroup": "[parameters('AZ_HDInsight_New_LS_properties_typeProperties_clusterResourceGroup')]",
+					"servicePrincipalId": "[parameters('AZ_HDInsight_New_LS_properties_typeProperties_servicePrincipalId')]",
+					"osType": "Linux",
+					"tenant": "[parameters('AZ_HDInsight_New_LS_properties_typeProperties_tenant')]",
+					"clusterNamePrefix": "",
+					"clusterUserName": "[parameters('AZ_HDInsight_New_LS_properties_typeProperties_clusterUserName')]",
+					"clusterPassword": {
+						"type": "SecureString",
+						"value": "[parameters('AZ_HDInsight_New_LS_clusterPassword')]"
+					},
+					"clusterSshUserName": "[parameters('AZ_HDInsight_New_LS_properties_typeProperties_clusterSshUserName')]",
+					"clusterSshPassword": {
+						"type": "SecureString",
+						"value": "[parameters('AZ_HDInsight_New_LS_clusterSshPassword')]"
+					},
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('AZ_HDInsight_New_LS_servicePrincipalKey')]"
+					},
+					"additionalLinkedServiceNames": [
+						{
+							"referenceName": "AZ_HDInsight_Inputs_LS",
+							"type": "LinkedServiceReference"
+						}
+					],
+					"linkedServiceName": {
+						"referenceName": "AZ_HDInsightBlob_LS",
+						"type": "LinkedServiceReference"
+					},
+					"headNodeSize": "",
+					"dataNodeSize": "",
+					"zookeeperNodeSize": "",
+					"subnetName": "",
+					"virtualNetworkId": ""
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "List All Files From Input files",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "AZ_ListAllFiles_DS",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems",
+								"itemType",
+								"itemName"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Filter file name",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "List All Files From Input files",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('List All Files From Input files').output.childItems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@endswith(item().name,'.txt')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Iterating Multiple Files",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Filter file name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Filter file name').output.Value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Read File Content",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"dataset": {
+											"referenceName": "AZ_ReadSingleFileContent_DS",
+											"type": "DatasetReference",
+											"parameters": {
+												"dynamicfilename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "Set Input File Location",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Read File Content",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "inputfilelocation",
+										"value": {
+											"value": "@activity('Read File Content').output.value[0].inputfilelocation",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set Output File Location",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Read File Content",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "outputfilelocation",
+										"value": {
+											"value": "@activity('Read File Content').output.value[0].outputFilelocation",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Process Web Analytics",
+									"type": "HDInsightHive",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"scriptPath": "hivedatastore/scripts/partitionweblogs.hql",
+										"defines": {
+											"inputfilelocation": {
+												"value": "@variables('inputfilelocation')",
+												"type": "Expression"
+											},
+											"outputfilelication": {
+												"value": "@variables('outputfilelocation')",
+												"type": "Expression"
+											}
+										},
+										"scriptLinkedService": {
+											"referenceName": "AZ_HDInsight_Auto_Storage_LS",
+											"type": "LinkedServiceReference"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AZ_HDInsight_Auto_LS",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Invoking spark",
+									"type": "HDInsightSpark",
+									"dependsOn": [
+										{
+											"activity": "Set Input File Location",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										},
+										{
+											"activity": "Set Output File Location",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"rootPath": "hivedatastore/scripts",
+										"entryFilePath": "webloganalysis.ipynb",
+										"sparkJobLinkedService": {
+											"referenceName": "AZ_HDInsight_Auto_Storage_LS",
+											"type": "LinkedServiceReference"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AZ_HDInsight_Auto_LS",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"variables": {
+					"inputfilelocation": {
+						"type": "String"
+					},
+					"outputfilelocation": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "HDInsight_Hive_Integration"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_HDInsight_Auto_LS')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AZ_LoadRasberryPiData')]",
@@ -348,7 +896,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RasberryPiJsonData')]",
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCollectionRasberryPi')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AZ_Load_Dynamic_Files')]",
@@ -454,7 +1005,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AZ_Source_Blob_Dynamic_Params_DS')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AZ_Lookup')]",
@@ -494,6 +1047,50 @@
 				"lastPublishTime": "2020-08-19T02:42:45Z"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_ProcessingBlobs')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ProcessingBlobs",
+						"type": "HDInsightHive",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "hdinsight/partitionweblogs.hql",
+							"defines": {
+								"inputfilepath": "wasbs://HDInsight@iothubstorageaccounttsk.blob.core.windows.net/inputdata/weblogs.log",
+								"partitionedtable": "wasbs://HDInsight@iothubstorageaccounttsk.blob.core.windows.net/outputdata/"
+							},
+							"scriptLinkedService": {
+								"referenceName": "AZ_HDInsight_Inputs_LS",
+								"type": "LinkedServiceReference"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AZ_HDInsight_LS",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "HDInsight_Hive_Processing"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_HDInsight_LS')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AZ_Source_Blob')]",
@@ -704,7 +1301,8 @@
 				"lastPublishTime": "2020-08-18T02:46:59Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SourceDataset_lvn')]"
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_lvn')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_lvn')]"
 			]
 		},
 		{
@@ -955,6 +1553,7 @@
 				"lastPublishTime": "2020-08-19T02:56:39Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_lvn')]",
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_lvn')]"
 			]
 		},
@@ -1206,567 +1805,8 @@
 				"lastPublishTime": "2020-08-19T03:02:06Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_lvn')]",
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_lvn')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DynamicContentPipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "SourceFile",
-								"type": "DatasetReference",
-								"parameters": {
-									"inputfile": "SalesCategory.csv"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SourceFiles",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SourceFile')]",
-				"[concat(variables('factoryId'), '/datasets/SourceFiles')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/getmetadatapipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get Metadata",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "SourceFile",
-								"type": "DatasetReference",
-								"parameters": {
-									"inputfile": "SalesCategory.csv"
-								}
-							},
-							"fieldList": [
-								"itemName",
-								"itemType",
-								"exists",
-								"lastModified"
-							],
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"recursive": true
-							},
-							"formatSettings": {
-								"type": "DelimitedTextReadSettings"
-							}
-						}
-					},
-					{
-						"name": "SP_GetFileMetadata",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "Get Metadata",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[STORE_FILEMETADATA]",
-							"storedProcedureParameters": {
-								"FileName": {
-									"value": {
-										"value": "@activity('Get Metadata').output.itemName",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"LastModifiedDate": {
-									"value": {
-										"value": "@activity('Get Metadata').output.lastModified",
-										"type": "Expression"
-									},
-									"type": "DateTime"
-								},
-								"RecInsertDate": {
-									"value": {
-										"value": "@utcnow()",
-										"type": "Expression"
-									},
-									"type": "DateTime"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "Az_SQL_DB_LS",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SourceFile')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/getmetadatapipeline_iterate')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get Metadata",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "SourceFiles",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"fieldList": [
-								"itemName",
-								"exists",
-								"lastModified",
-								"childItems",
-								"itemType"
-							],
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"recursive": true
-							},
-							"formatSettings": {
-								"type": "DelimitedTextReadSettings"
-							}
-						}
-					},
-					{
-						"name": "Filter_dbo",
-						"type": "Filter",
-						"dependsOn": [
-							{
-								"activity": "Get Metadata",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get Metadata').output.childitems",
-								"type": "Expression"
-							},
-							"condition": {
-								"value": "@startswith( item().name ,'[dbo]')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Filter_dbo",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Filter_dbo').output.Value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "SP_Save",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[STORE_FILEMETADATA]",
-										"storedProcedureParameters": {
-											"FileName": {
-												"value": {
-													"value": "@item().name",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"LastModifiedDate": {
-												"value": {
-													"value": "@utcnow()",
-													"type": "Expression"
-												},
-												"type": "DateTime"
-											},
-											"RecInsertDate": {
-												"value": {
-													"value": "@convertFromUtc(utcnow(),'Eastern Standard Time')",
-													"type": "Expression"
-												},
-												"type": "DateTime"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "Az_SQL_DB_LS",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SourceFiles')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AverageComedyRating')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "newsalesds",
-								"type": "DatasetReference"
-							},
-							"name": "sourceblob"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "SourceFiles",
-								"type": "DatasetReference"
-							},
-							"name": "destinationblobstorage"
-						}
-					],
-					"transformations": [
-						{
-							"name": "MoviesDBFilter"
-						},
-						{
-							"name": "AverageComedyRating"
-						}
-					],
-					"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> sourceblob\nsourceblob filter(toInteger(year) >=1910 && toInteger(year) <=2000 && rlike( genres, 'Comedy')) ~> MoviesDBFilter\nMoviesDBFilter aggregate(groupBy(year),\n\tRating = avg(toInteger(Rating))) ~> AverageComedyRating\nAverageComedyRating sink(input(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['AvgMovieRating.txt'],\n\tpartitionBy('hash', 1),\n\tdateFormat:'yyyy-MM-dd',\n\ttimestampFormat:'MM-dd-yyyy HH:mm:ss',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> destinationblobstorage"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/newsalesds')]",
-				"[concat(variables('factoryId'), '/datasets/SourceFiles')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/JoinSalesDataFiles')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "AZ_SRC_Sales_File_DS",
-								"type": "DatasetReference"
-							},
-							"name": "SourceSalesDataFile"
-						},
-						{
-							"dataset": {
-								"referenceName": "AZ_SRC_SalesCategory_File_DS",
-								"type": "DatasetReference"
-							},
-							"name": "SourceSalesCategoryDataFile"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DestinationJoinSalesDS",
-								"type": "DatasetReference"
-							},
-							"name": "DestJoinSalesAndSalesCategory"
-						}
-					],
-					"transformations": [
-						{
-							"name": "JoinSalesFiles"
-						}
-					],
-					"script": "source(output(\n\t\tProductID as short,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as double,\n\t\tListPrice as double,\n\t\tSize as string,\n\t\tWeight as string,\n\t\tProductCategoryID as short,\n\t\tProductModelID as short,\n\t\tSellStartDate as string,\n\t\tSellEndDate as string,\n\t\tModifiedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceSalesDataFile\nsource(output(\n\t\tProductCategoryID as short,\n\t\tParentProductCategoryID as short,\n\t\tName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceSalesCategoryDataFile\nSourceSalesDataFile, SourceSalesCategoryDataFile join(SourceSalesDataFile@ProductCategoryID == SourceSalesCategoryDataFile@ProductCategoryID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinSalesFiles\nJoinSalesFiles sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['SalesAndSalesCategory.csv'],\n\tmapColumn(\n\t\tProductID,\n\t\tName = SourceSalesDataFile@Name,\n\t\tProductNumber,\n\t\tColor,\n\t\tStandardCost,\n\t\tListPrice,\n\t\tSize,\n\t\tWeight,\n\t\tProductCategoryID = SourceSalesDataFile@ProductCategoryID,\n\t\tProductModelID,\n\t\tSellStartDate,\n\t\tSellEndDate,\n\t\tModifiedDate,\n\t\tParentProductCategoryID,\n\t\tName = SourceSalesCategoryDataFile@Name\n\t),\n\tpartitionBy('hash', 1),\n\tdateFormat:'yyyy.MM.dd',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DestJoinSalesAndSalesCategory"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AZ_ProcessingBlobs')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ProcessingBlobs",
-						"type": "HDInsightHive",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"scriptPath": "hdinsight/partitionweblogs.hql",
-							"defines": {
-								"inputfilepath": "wasbs://HDInsight@iothubstorageaccounttsk.blob.core.windows.net/inputdata/weblogs.log",
-								"partitionedtable": "wasbs://HDInsight@iothubstorageaccounttsk.blob.core.windows.net/outputdata/"
-							},
-							"scriptLinkedService": {
-								"referenceName": "AZ_HDInsight_Inputs_LS",
-								"type": "LinkedServiceReference"
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "AZ_HDInsight_LS",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"folder": {
-					"name": "HDInsight_Hive_Processing"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AZ_HDInsight_LS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AZ_Execute_Pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Input to Dynamic copy data",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "AZ_Load_Dynamic_Files",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": false,
-							"parameters": {
-								"containername": "",
-								"filename": "SalesCategory.csv",
-								"tableschema": "",
-								"tablename": "SalesCategory"
-							}
-						}
-					}
-				],
-				"folder": {
-					"name": "Sales"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/AZ_Load_Dynamic_Files')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/JoinPipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "JoinSalesDataFiles",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "JoinSalesDataFiles",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"SourceSalesDataFile": {},
-									"SourceSalesCategoryDataFile": {},
-									"DestJoinSalesAndSalesCategory": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"folder": {
-					"name": "DataFlow-Join"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/JoinSalesDataFiles')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/processmoviesdata')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "AverageComedyRating_1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "AverageComedyRating",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"sourceblob": {},
-									"destinationblobstorage": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"folder": {
-					"name": "DataFlow-Aggregation"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/AverageComedyRating')]"
 			]
 		}
 	]

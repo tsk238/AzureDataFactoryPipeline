@@ -17,6 +17,510 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DynamicContentPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceFile",
+								"type": "DatasetReference",
+								"parameters": {
+									"inputfile": "SalesCategory.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SourceFiles",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/getmetadatapipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "SourceFile",
+								"type": "DatasetReference",
+								"parameters": {
+									"inputfile": "SalesCategory.csv"
+								}
+							},
+							"fieldList": [
+								"itemName",
+								"itemType",
+								"exists",
+								"lastModified"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "SP_GetFileMetadata",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[STORE_FILEMETADATA]",
+							"storedProcedureParameters": {
+								"FileName": {
+									"value": {
+										"value": "@activity('Get Metadata').output.itemName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"LastModifiedDate": {
+									"value": {
+										"value": "@activity('Get Metadata').output.lastModified",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"RecInsertDate": {
+									"value": {
+										"value": "@utcnow()",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "Az_SQL_DB_LS",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/getmetadatapipeline_iterate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "SourceFiles",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"itemName",
+								"exists",
+								"lastModified",
+								"childItems",
+								"itemType"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Filter_dbo",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata').output.childitems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@startswith( item().name ,'[dbo]')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Filter_dbo",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Filter_dbo').output.Value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "SP_Save",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[STORE_FILEMETADATA]",
+										"storedProcedureParameters": {
+											"FileName": {
+												"value": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"LastModifiedDate": {
+												"value": {
+													"value": "@utcnow()",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"RecInsertDate": {
+												"value": {
+													"value": "@convertFromUtc(utcnow(),'Eastern Standard Time')",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "Az_SQL_DB_LS",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AverageComedyRating')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "newsalesds",
+								"type": "DatasetReference"
+							},
+							"name": "sourceblob"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SourceFiles",
+								"type": "DatasetReference"
+							},
+							"name": "destinationblobstorage"
+						}
+					],
+					"transformations": [
+						{
+							"name": "MoviesDBFilter"
+						},
+						{
+							"name": "AverageComedyRating"
+						}
+					],
+					"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> sourceblob\nsourceblob filter(toInteger(year) >=1910 && toInteger(year) <=2000 && rlike( genres, 'Comedy')) ~> MoviesDBFilter\nMoviesDBFilter aggregate(groupBy(year),\n\tRating = avg(toInteger(Rating))) ~> AverageComedyRating\nAverageComedyRating sink(input(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['AvgMovieRating.txt'],\n\tpartitionBy('hash', 1),\n\tdateFormat:'yyyy-MM-dd',\n\ttimestampFormat:'MM-dd-yyyy HH:mm:ss',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> destinationblobstorage"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/JoinSalesDataFiles')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AZ_SRC_Sales_File_DS",
+								"type": "DatasetReference"
+							},
+							"name": "SourceSalesDataFile"
+						},
+						{
+							"dataset": {
+								"referenceName": "AZ_SRC_SalesCategory_File_DS",
+								"type": "DatasetReference"
+							},
+							"name": "SourceSalesCategoryDataFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DestinationJoinSalesDS",
+								"type": "DatasetReference"
+							},
+							"name": "DestJoinSalesAndSalesCategory"
+						}
+					],
+					"transformations": [
+						{
+							"name": "JoinSalesFiles"
+						}
+					],
+					"script": "source(output(\n\t\tProductID as short,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as double,\n\t\tListPrice as double,\n\t\tSize as string,\n\t\tWeight as string,\n\t\tProductCategoryID as short,\n\t\tProductModelID as short,\n\t\tSellStartDate as string,\n\t\tSellEndDate as string,\n\t\tModifiedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceSalesDataFile\nsource(output(\n\t\tProductCategoryID as short,\n\t\tParentProductCategoryID as short,\n\t\tName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceSalesCategoryDataFile\nSourceSalesDataFile, SourceSalesCategoryDataFile join(SourceSalesDataFile@ProductCategoryID == SourceSalesCategoryDataFile@ProductCategoryID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinSalesFiles\nJoinSalesFiles sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['SalesAndSalesCategory.csv'],\n\tmapColumn(\n\t\tProductID,\n\t\tName = SourceSalesDataFile@Name,\n\t\tProductNumber,\n\t\tColor,\n\t\tStandardCost,\n\t\tListPrice,\n\t\tSize,\n\t\tWeight,\n\t\tProductCategoryID = SourceSalesDataFile@ProductCategoryID,\n\t\tProductModelID,\n\t\tSellStartDate,\n\t\tSellEndDate,\n\t\tModifiedDate,\n\t\tParentProductCategoryID,\n\t\tName = SourceSalesCategoryDataFile@Name\n\t),\n\tpartitionBy('hash', 1),\n\tdateFormat:'yyyy.MM.dd',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DestJoinSalesAndSalesCategory"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_Execute_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Input to Dynamic copy data",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "AZ_Load_Dynamic_Files",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": false,
+							"parameters": {
+								"containername": "",
+								"filename": "SalesCategory.csv",
+								"tableschema": "",
+								"tablename": "SalesCategory"
+							}
+						}
+					}
+				],
+				"folder": {
+					"name": "Sales"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/JoinPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "JoinSalesDataFiles",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "JoinSalesDataFiles",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SourceSalesDataFile": {},
+									"SourceSalesCategoryDataFile": {},
+									"DestJoinSalesAndSalesCategory": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"folder": {
+					"name": "DataFlow-Join"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/JoinSalesDataFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/processmoviesdata')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "AverageComedyRating_1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "AverageComedyRating",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceblob": {},
+									"destinationblobstorage": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"folder": {
+					"name": "DataFlow-Aggregation"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/AverageComedyRating')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/trigger1')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",

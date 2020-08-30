@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "dfcopyblobtsk"
 		},
+		"AZ_ HDInsight_Auto_ListInputFiles_LS_connectionString": {
+			"value": ""
+		},
 		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
 			"value": ""
 		},
@@ -17,6 +20,18 @@
 		"AZ_HDInsightBlob_LS_connectionString": {
 			"value": ""
 		},
+		"AZ_HDInsight_Auto_LS_password": {
+			"value": ""
+		},
+		"AZ_HDInsight_Auto_Storage_LS_connectionString": {
+			"value": ""
+		},
+		"AZ_HDInsight_Auto_readInputFileContent_LS_connectionString": {
+			"value": ""
+		},
+		"AZ_HDInsight_Inputs_LS_connectionString": {
+			"value": ""
+		},
 		"AZ_HDInsight_LS_clusterPassword": {
 			"value": ""
 		},
@@ -24,6 +39,15 @@
 			"value": ""
 		},
 		"AZ_HDInsight_LS_servicePrincipalKey": {
+			"value": ""
+		},
+		"AZ_HDInsight_New_LS_clusterPassword": {
+			"value": ""
+		},
+		"AZ_HDInsight_New_LS_clusterSshPassword": {
+			"value": ""
+		},
+		"AZ_HDInsight_New_LS_servicePrincipalKey": {
 			"value": ""
 		},
 		"AZ_SRC_Sales_LS_connectionString": {
@@ -44,8 +68,8 @@
 		"SourceRasbeeryPiJsonData_connectionString": {
 			"value": ""
 		},
-		"AZ_HDInsight_Inputs_LS_connectionString": {
-			"value": ""
+		"AZ_HDInsight_Auto_LS_properties_typeProperties_userName": {
+			"value": "shravan238"
 		},
 		"AZ_HDInsight_LS_properties_typeProperties_hostSubscriptionId": {
 			"value": "59fb1009-8a12-4f1c-8b5c-6dd026d33ccf"
@@ -58,6 +82,24 @@
 		},
 		"AZ_HDInsight_LS_properties_typeProperties_tenant": {
 			"value": "c934857e-30bb-4044-9f1a-ff36d2cc99c5"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_hostSubscriptionId": {
+			"value": "59fb1009-8a12-4f1c-8b5c-6dd026d33ccf"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_clusterResourceGroup": {
+			"value": "DF_COPY_BLOB_RG"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_servicePrincipalId": {
+			"value": "0cf3ac68-a439-476f-bc17-81b806a7cda7"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_tenant": {
+			"value": "c934857e-30bb-4044-9f1a-ff36d2cc99c5"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_clusterUserName": {
+			"value": "shravan238c"
+		},
+		"AZ_HDInsight_New_LS_properties_typeProperties_clusterSshUserName": {
+			"value": "shravan238"
 		},
 		"trigger1_properties_typeProperties_scope": {
 			"value": "/subscriptions/59fb1009-8a12-4f1c-8b5c-6dd026d33ccf/resourceGroups/iothub/providers/Microsoft.Storage/storageAccounts/iothubstorageaccounttsk"

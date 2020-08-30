@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dfcopyblobtsk"
 		},
+		"AZ_ HDInsight_Auto_ListInputFiles_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_ HDInsight_Auto_ListInputFiles_LS'"
+		},
 		"AZ_CosmosDB_RasberryPi_LS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_CosmosDB_RasberryPi_LS'"
@@ -22,6 +26,18 @@
 		"AZ_HDInsightBlob_LS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AZ_HDInsightBlob_LS'"
+		},
+		"AZ_HDInsight_Auto_Storage_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_HDInsight_Auto_Storage_LS'"
+		},
+		"AZ_HDInsight_Auto_readInputFileContent_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_HDInsight_Auto_readInputFileContent_LS'"
+		},
+		"AZ_HDInsight_Inputs_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZ_HDInsight_Inputs_LS'"
 		},
 		"AZ_SRC_Sales_LS_connectionString": {
 			"type": "secureString",
@@ -46,16 +62,25 @@
 		"SourceRasbeeryPiJsonData_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SourceRasbeeryPiJsonData'"
-		},
-		"AZ_HDInsight_Inputs_LS_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AZ_HDInsight_Inputs_LS'"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_ HDInsight_Auto_ListInputFiles_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_ HDInsight_Auto_ListInputFiles_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AZ_CosmosDB_RasberryPi_LS')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -104,6 +129,45 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('AZ_HDInsightBlob_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_Auto_Storage_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_HDInsight_Auto_Storage_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_Auto_readInputFileContent_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_HDInsight_Auto_readInputFileContent_LS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_Inputs_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AZ_HDInsight_Inputs_LS_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -187,19 +251,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_Inputs_LS')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AZ_HDInsight_Inputs_LS_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AZ_Destination_Dynamic_Params_DS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -235,6 +286,77 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AZ_Destination_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_ListAllFiles_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_ HDInsight_Auto_ListInputFiles_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "HDInsight_Hive_Integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "inputfilepath",
+						"container": "hivedatastore"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_ HDInsight_Auto_ListInputFiles_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AZ_ReadSingleFileContent_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZ_HDInsight_Auto_readInputFileContent_LS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"dynamicfilename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "HDInsight_Hive_Integration"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().dynamicfilename",
+							"type": "Expression"
+						},
+						"folderPath": "inputfilepath",
+						"container": "hivedatastore"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_HDInsight_Auto_readInputFileContent_LS')]"
 			]
 		},
 		{
@@ -365,197 +487,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AZ_SRC_Sales_LS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AZ_Source_Blob_Dynamic_Params_DS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AZ_Source_Blob_Dynamic_Params_LS",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"containername": {
-						"type": "string"
-					},
-					"filename": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Sales"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().filename",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().containername",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AZ_Source_Blob_Dynamic_Params_LS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiCollectionRasberryPi')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AZ_CosmosDB_RasberryPi_LS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "CosmosDbSqlApiCollection",
-				"schema": {},
-				"typeProperties": {
-					"collectionName": "DeviceData"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AZ_CosmosDB_RasberryPi_LS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DestinationDataset_lvn')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AZ_Dest_Blob2",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@{item().Table_Name}",
-							"type": "Expression"
-						},
-						"container": "movies"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AZ_Dest_Blob2')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DestinationJoinSalesDS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "DestSalesAndSalesCateogyLS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "movies"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/DestSalesAndSalesCateogyLS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RasberryPiJsonData')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SourceRasbeeryPiJsonData",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "RasberryPiData.json",
-						"container": "temperature"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"messageId": {
-							"type": "integer"
-						},
-						"deviceId": {
-							"type": "string"
-						},
-						"temperature": {
-							"type": "number"
-						},
-						"humidity": {
-							"type": "number"
-						},
-						"EventProcessedUtcTime": {
-							"type": "string"
-						},
-						"PartitionId": {
-							"type": "integer"
-						},
-						"EventEnqueuedUtcTime": {
-							"type": "string"
-						},
-						"IoTHub": {
-							"type": "object",
-							"properties": {
-								"MessageId": {
-									"type": "null"
-								},
-								"CorrelationId": {
-									"type": "null"
-								},
-								"ConnectionDeviceId": {
-									"type": "string"
-								},
-								"ConnectionDeviceGenerationId": {
-									"type": "string"
-								},
-								"EnqueuedTime": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SourceRasbeeryPiJsonData')]"
 			]
 		}
 	]
