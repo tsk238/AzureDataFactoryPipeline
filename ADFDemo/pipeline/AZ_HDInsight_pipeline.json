@@ -1,5 +1,5 @@
 {
-	"name": "pipeline",
+	"name": "AZ_HDInsight_pipeline",
 	"properties": {
 		"folder": {
 			"name": "HDInsight_Hive_Integration"
