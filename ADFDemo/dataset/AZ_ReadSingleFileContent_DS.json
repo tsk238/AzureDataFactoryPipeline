@@ -1,0 +1,26 @@
+{
+	"name": "AZ_ReadSingleFileContent_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZ_HDInsight_Auto_readInputFileContent_LS",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "HDInsight_Hive_Integration"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "inputfilepath",
+				"container": "hivedatastore"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

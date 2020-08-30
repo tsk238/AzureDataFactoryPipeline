@@ -1,0 +1,9 @@
+{
+	"name": "pipeline",
+	"properties": {
+		"folder": {
+			"name": "HDInsight_Hive_Integration"
+		},
+		"annotations": []
+	}
+}
