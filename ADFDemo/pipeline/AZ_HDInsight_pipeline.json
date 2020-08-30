@@ -113,6 +113,14 @@
 				}
 			}
 		],
+		"parameters": {
+			"inputfilelocation": {
+				"type": "string"
+			},
+			"outputfilelocation": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "HDInsight_Hive_Integration"
 		},
