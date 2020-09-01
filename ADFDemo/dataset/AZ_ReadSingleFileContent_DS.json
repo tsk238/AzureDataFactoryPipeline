@@ -19,7 +19,6 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "@dataset().dynamicfilename",
-				"folderPath": "Scripts",
 				"container": "spark"
 			},
 			"columnDelimiter": ",",
