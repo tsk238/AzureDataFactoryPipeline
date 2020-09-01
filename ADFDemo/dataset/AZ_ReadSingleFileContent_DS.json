@@ -22,8 +22,8 @@
 					"value": "@dataset().dynamicfilename",
 					"type": "Expression"
 				},
-				"folderPath": "inputfilepath",
-				"container": "hivedatastore"
+				"folderPath": "InputData",
+				"container": "spark"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
