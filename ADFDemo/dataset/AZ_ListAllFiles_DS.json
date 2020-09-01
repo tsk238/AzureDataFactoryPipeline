@@ -13,8 +13,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "inputfilepath",
-				"container": "hivedatastore"
+				"folderPath": "InputData",
+				"container": "spark"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
