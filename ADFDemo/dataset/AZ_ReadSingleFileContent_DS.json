@@ -18,7 +18,11 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@dataset().dynamicfilename",
+				"fileName": {
+					"value": "@dataset().dynamicfilename",
+					"type": "Expression"
+				},
+				"folderPath": "InputData",
 				"container": "spark"
 			},
 			"columnDelimiter": ",",
