@@ -5,14 +5,14 @@
 		"annotations": [],
 		"type": "HDInsight",
 		"typeProperties": {
-			"clusterUri": "https://shravanclusterhdins.azurehdinsight.net",
+			"clusterUri": "https://sparkshravan.azurehdinsight.net",
 			"userName": "shravan238",
 			"isEspEnabled": false,
 			"linkedServiceName": {
 				"referenceName": "AZ_HDInsight_Auto_Storage_LS",
 				"type": "LinkedServiceReference"
 			},
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRGQ09QWUJMT0JUU0tfODE4YjhmZmYtNmJkMi00ODU4LWExN2MtNTQwOTE2OGQ2MWIxIg0KfQ=="
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRGQ09QWUJMT0JUU0tfMjg1NjE5YTAtYzdhZS00NDEyLThkMTYtMWQ1YjViOWE3ODBjIg0KfQ=="
 		}
 	}
 }
