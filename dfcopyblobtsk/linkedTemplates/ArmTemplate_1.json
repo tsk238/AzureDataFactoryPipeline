@@ -841,6 +841,231 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AZ_HDInsight_pipeline_spark')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "List All Files From Input files",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "AZ_ListAllFiles_DS",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems",
+								"itemType",
+								"itemName"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Filter file name",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "List All Files From Input files",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('List All Files From Input files').output.childItems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@endswith(item().name,'.txt')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Iterating Multiple Files",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Filter file name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Filter file name').output.Value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Read File Content",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"dataset": {
+											"referenceName": "AZ_ReadSingleFileContent_DS",
+											"type": "DatasetReference",
+											"parameters": {
+												"dynamicfilename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "Set Input File Location",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Read File Content",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "inputfilelocation",
+										"value": {
+											"value": "@activity('Read File Content').output.value[0].inputFilelocation",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set Output File Location",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Read File Content",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "outputfilelocation",
+										"value": {
+											"value": "@activity('Read File Content').output.value[0].outputfilelocation",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Invoking spark",
+									"type": "HDInsightSpark",
+									"dependsOn": [
+										{
+											"activity": "Set Input File Location",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										},
+										{
+											"activity": "Set Output File Location",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"rootPath": "spark/Scripts",
+										"entryFilePath": "WordCount_Spark.py",
+										"sparkConfig": {
+											"inputfilelocation": {
+												"value": "@variables('inputfilelocation')",
+												"type": "Expression"
+											},
+											"outputfilelocation": {
+												"value": "@variables('outputfilelocation')",
+												"type": "Expression"
+											}
+										},
+										"sparkJobLinkedService": {
+											"referenceName": "AZ_HDInsight_Auto_Storage_LS",
+											"type": "LinkedServiceReference"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AZ_HDInsight_Auto_LS",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"variables": {
+					"inputfilelocation": {
+						"type": "String"
+					},
+					"outputfilelocation": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "HDInsight_Hive_Integration"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AZ_HDInsight_Auto_LS')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AZ_LoadRasberryPiData')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1551,258 +1776,6 @@
 				],
 				"annotations": [],
 				"lastPublishTime": "2020-08-19T02:56:39Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_lvn')]",
-				"[concat(variables('factoryId'), '/datasets/SourceDataset_lvn')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CopyDBTablesToBlobStorage_copy1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get Table List from database",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT QUOTENAME(table_Schema)+'.'+QUOTENAME(TABLE_NAME) AS Table_Name \n   FROM information_Schema.tables\n",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "AZ_SQL_DB",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "TableSelectedWithdbo",
-						"type": "Filter",
-						"dependsOn": [
-							{
-								"activity": "Get Table List from database",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get Table List from database').output.value",
-								"type": "Expression"
-							},
-							"condition": {
-								"value": "@startswith( item().Table_Name,'[dbo]')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "IterateDBTablesToBlobStorage",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "TableSelectedWithdbo",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('TableSelectedWithdbo').output.value",
-								"type": "Expression"
-							},
-							"isSequential": false,
-							"activities": [
-								{
-									"name": "IterateIndDBTablesToBlobStorage",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderQuery": {
-												"value": "SELECT * FROM @{item().Table_Name}",
-												"type": "Expression"
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "AZ_SQL_DB",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DestinationDataset_lvn",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
-								},
-								{
-									"name": "If Condition1",
-									"type": "IfCondition",
-									"dependsOn": [
-										{
-											"activity": "IterateIndDBTablesToBlobStorage",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@contains( item().Table_Name,'Files')",
-											"type": "Expression"
-										},
-										"ifFalseActivities": [
-											{
-												"name": "MoveToArchiveContainer",
-												"type": "Copy",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"source": {
-														"type": "DelimitedTextSource",
-														"storeSettings": {
-															"type": "AzureBlobStorageReadSettings",
-															"recursive": true
-														},
-														"formatSettings": {
-															"type": "DelimitedTextReadSettings"
-														}
-													},
-													"sink": {
-														"type": "DelimitedTextSink",
-														"storeSettings": {
-															"type": "AzureBlobStorageWriteSettings"
-														},
-														"formatSettings": {
-															"type": "DelimitedTextWriteSettings",
-															"quoteAllText": true,
-															"fileExtension": ".txt"
-														}
-													},
-													"enableStaging": false,
-													"translator": {
-														"type": "TabularTranslator",
-														"typeConversion": true,
-														"typeConversionSettings": {
-															"allowDataTruncation": true,
-															"treatBooleanAsNumber": false
-														}
-													}
-												},
-												"inputs": [
-													{
-														"referenceName": "DestinationDataset_lvn",
-														"type": "DatasetReference",
-														"parameters": {}
-													}
-												],
-												"outputs": [
-													{
-														"referenceName": "SourceDataset_lvn",
-														"type": "DatasetReference",
-														"parameters": {}
-													}
-												]
-											}
-										],
-										"ifTrueActivities": [
-											{
-												"name": "DeleteFile",
-												"type": "Delete",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"dataset": {
-														"referenceName": "DestinationDataset_lvn",
-														"type": "DatasetReference",
-														"parameters": {}
-													},
-													"enableLogging": false,
-													"storeSettings": {
-														"type": "AzureBlobStorageReadSettings",
-														"recursive": true
-													}
-												}
-											}
-										]
-									}
-								}
-							]
-						}
-					}
-				],
-				"annotations": [],
-				"lastPublishTime": "2020-08-19T03:02:06Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DestinationDataset_lvn')]",
