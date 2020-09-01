@@ -477,7 +477,7 @@
 				"annotations": [],
 				"type": "HDInsight",
 				"typeProperties": {
-					"clusterUri": "https://shravanclusterhdins.azurehdinsight.net",
+					"clusterUri": "https://sparkshravan.azurehdinsight.net",
 					"userName": "[parameters('AZ_HDInsight_Auto_LS_properties_typeProperties_userName')]",
 					"password": {
 						"type": "SecureString",

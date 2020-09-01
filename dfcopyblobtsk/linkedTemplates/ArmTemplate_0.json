@@ -305,8 +305,8 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "inputfilepath",
-						"container": "hivedatastore"
+						"folderPath": "InputFilePath",
+						"container": "spark"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -345,8 +345,8 @@
 							"value": "@dataset().dynamicfilename",
 							"type": "Expression"
 						},
-						"folderPath": "inputfilepath",
-						"container": "hivedatastore"
+						"folderPath": "InputFilePath",
+						"container": "spark"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
