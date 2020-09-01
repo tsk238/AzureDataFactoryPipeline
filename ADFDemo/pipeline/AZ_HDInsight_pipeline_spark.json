@@ -1,0 +1,213 @@
+{
+	"name": "AZ_HDInsight_pipeline_spark",
+	"properties": {
+		"activities": [
+			{
+				"name": "List All Files From Input files",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "AZ_ListAllFiles_DS",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"childItems",
+						"itemType",
+						"itemName"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Filter file name",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "List All Files From Input files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('List All Files From Input files').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@endswith(item().name,'.txt')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Iterating Multiple Files",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Filter file name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Filter file name').output.Value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Read File Content",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"dataset": {
+									"referenceName": "AZ_ReadSingleFileContent_DS",
+									"type": "DatasetReference",
+									"parameters": {
+										"dynamicfilename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								"firstRowOnly": false
+							}
+						},
+						{
+							"name": "Set Input File Location",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Read File Content",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "inputfilelocation",
+								"value": {
+									"value": "@activity('Read File Content').output.value[0].inputFilelocation",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set Output File Location",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Read File Content",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "outputfilelocation",
+								"value": {
+									"value": "@activity('Read File Content').output.value[0].outputfilelocation",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Invoking spark",
+							"type": "HDInsightSpark",
+							"dependsOn": [
+								{
+									"activity": "Set Input File Location",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Set Output File Location",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"rootPath": "spark/Scripts",
+								"entryFilePath": "WordCount_Spark.py",
+								"arguments": [
+									"@variables('inputfilelocation')",
+									"@variables('outputfilelocation')"
+								],
+								"sparkJobLinkedService": {
+									"referenceName": "AZ_HDInsight_Auto_Storage_LS",
+									"type": "LinkedServiceReference"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AZ_HDInsight_Auto_LS",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"inputfilelocation": {
+				"type": "String"
+			},
+			"outputfilelocation": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "HDInsight_Hive_Integration"
+		},
+		"annotations": []
+	}
+}
