@@ -180,8 +180,14 @@
 								"rootPath": "spark/Scripts",
 								"entryFilePath": "WordCount_Spark.py",
 								"sparkConfig": {
-									"inputfilepath": "@variables('inputfilelocation')",
-									"outputfilepath": "@variables('outputfilelocation')"
+									"inputfilelocation": {
+										"value": "@variables('inputfilelocation')",
+										"type": "Expression"
+									},
+									"outputfilelocation": {
+										"value": "@variables('outputfilelocation')",
+										"type": "Expression"
+									}
 								},
 								"sparkJobLinkedService": {
 									"referenceName": "AZ_HDInsight_Auto_Storage_LS",
