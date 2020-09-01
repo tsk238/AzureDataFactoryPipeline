@@ -22,7 +22,7 @@
 					"value": "@dataset().dynamicfilename",
 					"type": "Expression"
 				},
-				"folderPath": "InputData",
+				"folderPath": "Scripts",
 				"container": "spark"
 			},
 			"columnDelimiter": ",",
