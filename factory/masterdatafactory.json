@@ -1,0 +1,9 @@
+{
+	"name": "masterdatafactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5dbb5c6c-4829-43dc-968f-4fc66578d290",
+		"tenantId": "1fb27c94-bbdc-4509-8698-420bef3764f0"
+	}
+}

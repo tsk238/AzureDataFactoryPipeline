@@ -1,0 +1,24 @@
+{
+	"name": "FileFound",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipeline1",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/sourcedata/blobs/test",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/f0dd8e44-d2f1-4df8-ad18-9f8cddc6703e/resourceGroups/DevResGroup/providers/Microsoft.Storage/storageAccounts/mainstorageact",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
