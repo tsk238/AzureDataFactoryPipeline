@@ -36,7 +36,9 @@
 						}
 					},
 					"sink": {
-						"type": "AzureSqlSink"
+						"type": "AzureSqlSink",
+						"preCopyScript": "delete from dbo.customer",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
