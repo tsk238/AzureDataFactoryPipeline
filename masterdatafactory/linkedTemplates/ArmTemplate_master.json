@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
 		},
+		"LS_SalesSqlDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SalesSqlDB'"
+		},
 		"FileFound_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/f0dd8e44-d2f1-4df8-ad18-9f8cddc6703e/resourceGroups/DevResGroup/providers/Microsoft.Storage/storageAccounts/mainstorageact"
@@ -51,6 +55,9 @@
 					},
 					"AzureBlobStorage2_connectionString": {
 						"value": "[parameters('AzureBlobStorage2_connectionString')]"
+					},
+					"LS_SalesSqlDB_connectionString": {
+						"value": "[parameters('LS_SalesSqlDB_connectionString')]"
 					},
 					"FileFound_properties_typeProperties_scope": {
 						"value": "[parameters('FileFound_properties_typeProperties_scope')]"

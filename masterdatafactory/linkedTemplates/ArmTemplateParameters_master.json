@@ -11,6 +11,9 @@
 		"AzureBlobStorage2_connectionString": {
 			"value": ""
 		},
+		"LS_SalesSqlDB_connectionString": {
+			"value": ""
+		},
 		"FileFound_properties_typeProperties_scope": {
 			"value": "/subscriptions/f0dd8e44-d2f1-4df8-ad18-9f8cddc6703e/resourceGroups/DevResGroup/providers/Microsoft.Storage/storageAccounts/mainstorageact"
 		},
