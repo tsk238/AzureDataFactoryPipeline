@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
 		},
+		"LS_FilesFromDestination_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_FilesFromDestination'"
+		},
 		"LS_SalesSqlDB_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_SalesSqlDB'"
@@ -55,6 +59,9 @@
 					},
 					"AzureBlobStorage2_connectionString": {
 						"value": "[parameters('AzureBlobStorage2_connectionString')]"
+					},
+					"LS_FilesFromDestination_connectionString": {
+						"value": "[parameters('LS_FilesFromDestination_connectionString')]"
 					},
 					"LS_SalesSqlDB_connectionString": {
 						"value": "[parameters('LS_SalesSqlDB_connectionString')]"

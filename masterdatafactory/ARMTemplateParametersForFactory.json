@@ -11,6 +11,9 @@
 		"AzureBlobStorage2_connectionString": {
 			"value": ""
 		},
+		"LS_FilesFromDestination_connectionString": {
+			"value": ""
+		},
 		"LS_SalesSqlDB_connectionString": {
 			"value": ""
 		},
