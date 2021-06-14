@@ -48,7 +48,7 @@
 						"value": "@activity('Get Files Metadata').output.childItems",
 						"type": "Expression"
 					},
-					"isSequential": true,
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "Copy data1",
